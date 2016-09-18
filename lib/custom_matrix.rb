@@ -1,4 +1,5 @@
 module CustomMatrix
+  
   def custom_pretty_print
     string = ''
     maxes = array_maxes
@@ -48,8 +49,8 @@ module CustomMatrix
     end.compact
 
     with_removed_column = with_removed_row.map do |row|
-      row.map do |value|
-        row.to_a.index(value) == column_to_remove ? nil : value
+      row.map.with_index do |value, column_index|
+        column_index == column_to_remove ? nil : value
       end.to_a.compact
     end
 
@@ -60,11 +61,11 @@ module CustomMatrix
     end
   end
 
-  private
-
-  def []=(i, j, x)
-    @rows[i][j] = x
+  def swap_rows(first_row, second_row)
+    @rows[first_row], @rows[second_row] = @rows[second_row], @rows[first_row]
   end
+
+  private
 
   def array_maxes
     row_vectors.reduce([]) do |maxes, row|
