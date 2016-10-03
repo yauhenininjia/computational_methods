@@ -5,4 +5,7 @@ require 'pry'
 
 require_relative './custom_matrix'
 require_relative './matrix/matrix'
+require_relative './gaussian_solver/gaussian_solver'
 require_relative './inverse_matrix_finder/inverse_matrix_finder'
+require_relative './approximator/approximator'
+require_relative './approximator/least_squares_approximator'

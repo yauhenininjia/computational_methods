@@ -65,6 +65,7 @@ module CustomMatrix
     @rows[first_row], @rows[second_row] = @rows[second_row], @rows[first_row]
   end
 
+
   private
 
   def array_maxes
