@@ -29,4 +29,20 @@ class App < Thor
       puts
     end
   end
+
+  desc 'intagration', 'find integral of function'
+  method_option :method, desc: 'method of integration', default: 'trapezoids', aliases: '-m'
+  def integrate
+    integrator = Integrator.new(options[:method], a: 1, b: 4, partitions_count: 1_000).get_integrator
+    integrator.function = Proc.new { |arg| arg - 5 * (Math.sin(arg) ** 2) }
+    puts integrator.integrate
+  end
+
+  desc 'differentiation', 'find 1st and 2nd differential of function'
+  def differentiate
+    differentiator = Differentiator.new(a: 1, b:4, epsilon: 0.001)
+    differentiator.differential_functions << Proc.new { |arg| 1 - 10 * Math.sin(arg) * Math.cos(arg) }
+    differentiator.differential_functions << Proc.new { |arg| -10 * (Math.sin(arg) ** 2) + 10 * (Math.cos(arg) ** 2) }
+    differentiator.do_stuff
+  end
 end
