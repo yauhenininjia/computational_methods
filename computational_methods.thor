@@ -45,4 +45,22 @@ class App < Thor
     differentiator.differential_functions << Proc.new { |arg| -10 * (Math.sin(arg) ** 2) + 10 * (Math.cos(arg) ** 2) }
     differentiator.do_stuff
   end
+
+
+
+  desc 'iteration', 'resolve nonlinear equation by the method of simple iterations'
+  def iterate
+    iterator = NonlinearSimpleIterator.new
+    iterator.fi_function = Proc.new { |x| 5 * (Math.sin(x) ** 2 + 1) }
+    iterator.eps = 0.001
+
+    f = Proc.new { |x| x - 5 * (Math.sin(x) ** 2) - 5 }
+
+    [3, 4, 6].each do |start_point|
+      iterator.start_point = start_point
+      solution = iterator.iterate
+      puts solution.to_s.colorize(:red)
+      puts f.call(solution).to_s.colorize(:blue)
+    end
+  end
 end

@@ -1,5 +1,6 @@
 source 'https://rubygems.org'
 ruby '2.2.2'
 
-gem 'thor'
+gem 'colorize'
 gem 'pry'
+gem 'thor'
