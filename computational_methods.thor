@@ -71,6 +71,56 @@ class App < Thor
       solution = iterator.iterate
       puts solution.to_s.colorize(:red)
     end
+  end
 
+  desc 'ode', 'solve system of ordinary differential equations'
+  def ordinary_differential_equations
+    initial_x = 2
+    initial_y = 4
+    initial_z = Math::E ** 2
+    step = 0.05
+    p_func = Proc.new { |x, y, z| y / (2 * x) + z / (Math::E ** x) }
+    g_func = Proc.new { |x, y, z| y * z / (2 * x) }
+
+    runge_kutta = RungeKutta4.new(initial_x, initial_y, initial_z)
+    runge_kutta.p_func = p_func
+    runge_kutta.g_func = g_func
+    runge_kutta.h = step
+
+    y_1 = runge_kutta.next_y
+    z_1 = runge_kutta.next_z
+
+    runge_kutta.x = 2.05
+    runge_kutta.y = y_1
+    runge_kutta.z = z_1
+
+    y_2 = runge_kutta.next_y
+    z_2 = runge_kutta.next_z
+
+    runge_kutta.x = 2.1
+    runge_kutta.y = y_2
+    runge_kutta.z = z_2
+
+    y_3 = runge_kutta.next_y
+    z_3 = runge_kutta.next_z
+
+    x_values = [2, 2.05, 2.1, 2.15]    
+    y_values = [initial_y, y_1, y_2, y_3]
+    z_values = [initial_z, z_1, z_2, z_3]
+
+    adams = Adams3.new
+    adams.p_func = p_func
+    adams.g_func = g_func
+    adams.step = step
+    adams.upper_bound = 3
+    adams.x_values = x_values
+    adams.y_values = y_values
+    adams.z_values = z_values
+
+    x_values, y_values, z_values = adams.values
+
+    x_values.map.with_index do |x, index|
+      puts [x, (2 * x) - y_values[index]].join(' ')
+    end
   end
 end
