@@ -143,21 +143,21 @@ class App < Thor
   def penalty_function
     rosenbrock_function = Proc.new { |args| 100 * ((args[1] + args[0] ** 2) ** 2) + (1 - args[0]) ** 2 }
     fi_function = Proc.new { |args| [2 - args[0], 0].max }
-    function = Proc.new { |args| rosenbrock_function.call(args) + 1 * fi_function.call(args) }
+    function = Proc.new do |args|
+      fi_result = fi_function.call(args)
+      fi_param = fi_result == 0 ? 0 : 1_000_000_000
+      rosenbrock_function.call(args) + fi_param
+    end
 
     finder = GoldSectionMinimumFinder.new
     finder.function = function
-    finder.epsilon = 0.00001
-    finder.start = -300
-    finder.end = 300
-    finder.default_params_for_function = [nil, 10]
+    finder.epsilon = 0.000_001
+    finder.start = -5
+    finder.end = 5
 
-    first_min_arg, first_min_value = finder.find
-    finder.default_params_for_function = [first_min_arg, nil]
-    second_min_arg, second_min_value = finder.find
-    puts first_min_arg
-    puts second_min_arg
+    first_min_arg, second_min_arg = finder.find_minimum
 
+    puts [first_min_arg, second_min_arg].join(' ')
     puts rosenbrock_function.call([first_min_arg, second_min_arg])
   end
 end
