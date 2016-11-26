@@ -46,7 +46,17 @@ class App < Thor
     differentiator.do_stuff
   end
 
-
+  desc 'eigen', 'find eigenvalues and eigenvector'
+  method_option :file, desc: 'file with input data', default: 'input.csv', aliases: '-f'
+  def eigen
+    input = CSV.read(options[:file])
+    matrix = Matrix.build(input.count, input.first.count) { |row, col| input[row][col].to_i }
+    eigen_value_finder = Matrix::EigenvalueDecomposition.new(matrix)
+    puts 'Eigen values:'
+    puts eigen_value_finder.eigenvalues
+    puts 'Eigen vectors:'
+    puts eigen_value_finder.eigenvector_matrix_inv.custom_pretty_print
+  end
 
   desc 'iteration', 'resolve nonlinear equation by the method of simple iterations'
   def iterate
