@@ -124,16 +124,32 @@ class App < Thor
     end
   end
 
-  desc 'golden section', 'find minimum of fucntion with gold section method'
+  desc 'golden section', 'find minimum of function with gold section method'
   def gold_section
     rosenbrock_function = Proc.new { |args| 100 * ((args[1] + args[0] ** 2) ** 2) + (1 - args[0]) ** 2 }
 
-    function = Proc.new { |arg| arg ** 2 + 1 }
     finder = GoldSectionMinimumFinder.new
     finder.function = rosenbrock_function
-    finder.epsilon = 0.00001
+    finder.epsilon = 0.000_000_001
     finder.start = -3
     finder.end = 3
+
+    first_min_arg, second_min_arg = finder.find_minimum
+    puts [first_min_arg, second_min_arg].join(' ')
+    puts rosenbrock_function.call([first_min_arg, second_min_arg])
+  end
+
+  desc 'penalty function method', 'find conditional minimum of function with peanlty function method'
+  def penalty_function
+    rosenbrock_function = Proc.new { |args| 100 * ((args[1] + args[0] ** 2) ** 2) + (1 - args[0]) ** 2 }
+    fi_function = Proc.new { |args| [2 - args[0], 0].max }
+    function = Proc.new { |args| rosenbrock_function.call(args) + 1 * fi_function.call(args) }
+
+    finder = GoldSectionMinimumFinder.new
+    finder.function = function
+    finder.epsilon = 0.00001
+    finder.start = -300
+    finder.end = 300
     finder.default_params_for_function = [nil, 10]
 
     first_min_arg, first_min_value = finder.find
