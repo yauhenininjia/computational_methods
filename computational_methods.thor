@@ -75,52 +75,58 @@ class App < Thor
 
   desc 'ode', 'solve system of ordinary differential equations'
   def ordinary_differential_equations
-    initial_x = 2
-    initial_y = 4
-    initial_z = Math::E ** 2
+    initial_x = 1
+    initial_y = 2 * initial_x
+    initial_z = Math::E ** initial_x
     step = 0.05
     p_func = Proc.new { |x, y, z| y / (2 * x) + z / (Math::E ** x) }
     g_func = Proc.new { |x, y, z| y * z / (2 * x) }
-
-    runge_kutta = RungeKutta4.new(initial_x, initial_y, initial_z)
-    runge_kutta.p_func = p_func
-    runge_kutta.g_func = g_func
-    runge_kutta.h = step
-
-    y_1 = runge_kutta.next_y
-    z_1 = runge_kutta.next_z
-
-    runge_kutta.x = 2.05
-    runge_kutta.y = y_1
-    runge_kutta.z = z_1
-
-    y_2 = runge_kutta.next_y
-    z_2 = runge_kutta.next_z
-
-    runge_kutta.x = 2.1
-    runge_kutta.y = y_2
-    runge_kutta.z = z_2
-
-    y_3 = runge_kutta.next_y
-    z_3 = runge_kutta.next_z
-
-    x_values = [2, 2.05, 2.1, 2.15]    
-    y_values = [initial_y, y_1, y_2, y_3]
-    z_values = [initial_z, z_1, z_2, z_3]
 
     adams = Adams3.new
     adams.p_func = p_func
     adams.g_func = g_func
     adams.step = step
     adams.upper_bound = 3
+
+    runge_kutta = RungeKutta4.new(initial_x, initial_y, initial_z)
+    runge_kutta.p_func = p_func
+    runge_kutta.g_func = g_func
+    runge_kutta.h = step
+
+    x_values = [initial_x]
+    y_values = [initial_y]
+    z_values = [initial_z]
+
+    (initial_x + step..(initial_x + 3 * step)).step(step).each do |x|
+      runge_kutta.x = x
+      runge_kutta.y = y_values.last
+      runge_kutta.z = z_values.last
+
+      x_values << x
+      y_values << runge_kutta.next_y
+      z_values << runge_kutta.next_z
+    end
+
     adams.x_values = x_values
     adams.y_values = y_values
     adams.z_values = z_values
 
     x_values, y_values, z_values = adams.values
 
+    puts '2x'
     x_values.map.with_index do |x, index|
-      puts [x, (2 * x) - y_values[index]].join(' ')
+      x_string = x.to_s.colorize(:red)
+      y_string = y_values[index].to_s.colorize(:green)
+      value_string = (2 * x).to_s.colorize(:blue)
+      puts [x_string, value_string, y_string].join(' ')
+    end
+
+    puts 'e^x'
+    x_values.map.with_index do |x, index|
+      x_string = x.to_s.colorize(:red)
+      z_string = z_values[index].to_s.colorize(:green)
+      value_string = (Math::E ** x).to_s.colorize(:blue)
+      puts [x_string, value_string, z_string].join(' ')
     end
   end
 
